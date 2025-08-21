@@ -11,19 +11,30 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<IProductRepository, InMemoryProductRepository>();
 builder.Services.AddScoped<Context>(sp =>
 {
-    List<Product> products = 
+    List<Product> products =
     [
-        new Product { Id = 1, Name = "Popular Product", Price = 80.00m },
+        new Product { Id = 1, Name = "Popular Product", Price = 80.00m,  },
         new Product { Id = 2, Name = "Special Product", Price = 100.00m },
-        new Product { Id = 3, Name = "Extra Product", Price = 120.00m },
+        new Product { Id = 3, Name = "Extra Product", Price = 120.00m, DiscountedPrice = 1 },
         new Product { Id = 4, Name = "Smart Product", Price = 40.00m },
-        new Product { Id = 5, Name = "Oldschool Product", Price = 10.00m },
+        new Product { Id = 5, Name = "Oldschool Product", Price = 10.00m  },
     ];
 
     return new Context { Products = products.ToDictionary(p => p.Id) };
 });
 
+
+builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
+{
+    policy
+    .WithOrigins("https://localhost:7108")
+    .WithMethods("GET")
+    .AllowAnyHeader();
+}));
+
 var app = builder.Build();
+
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

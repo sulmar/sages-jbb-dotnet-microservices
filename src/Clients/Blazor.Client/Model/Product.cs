@@ -5,7 +5,7 @@ public class Product
     public int Id { get; set; }
     public string Name { get; set; }
     public decimal Price { get; set; }
-    public decimal DiscountedPrice  { get; set; }
+    public decimal? DiscountedPrice  { get; set; }
     public bool IsSale => Price > DiscountedPrice;
 
     public Product(int id, string name, decimal price, decimal? discountedPrice = null)
