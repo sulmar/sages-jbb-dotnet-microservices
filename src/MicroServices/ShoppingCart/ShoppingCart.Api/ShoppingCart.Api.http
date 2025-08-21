@@ -1,0 +1,17 @@
+@ShoppingCart.Api_HostAddress = http://localhost:5211
+
+GET {{ShoppingCart.Api_HostAddress}}/ping
+Accept: application/json
+
+###
+
+
+POST {{ShoppingCart.Api_HostAddress}}/api/cart
+Content-Type: application/json
+{
+    "Name": "a",
+    "Price": 1.99
+}
+
+
+###
