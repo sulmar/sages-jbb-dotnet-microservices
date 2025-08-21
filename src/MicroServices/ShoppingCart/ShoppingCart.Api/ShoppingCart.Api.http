@@ -9,9 +9,9 @@ Accept: application/json
 POST {{ShoppingCart.Api_HostAddress}}/api/cart
 Content-Type: application/json
 {
+    "Id": 1,
     "Name": "a",
     "Price": 1.99
 }
-
 
 ###
