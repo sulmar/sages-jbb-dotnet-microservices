@@ -1,5 +1,5 @@
 ﻿using ProductCatalog.Domain.Abstractions;
-using ProductCatalog.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace ProductCatalog.Infrastructure;
 

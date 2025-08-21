@@ -1,6 +1,6 @@
 using ProductCatalog.Domain.Abstractions;
-using ProductCatalog.Domain.Entities;
 using ProductCatalog.Infrastructure;
+using Shared.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -1,4 +1,4 @@
-﻿namespace ProductCatalog.Domain.Entities;
+﻿namespace Shared.Domain.Entities;
 
 public class Product : BaseEntity
 {

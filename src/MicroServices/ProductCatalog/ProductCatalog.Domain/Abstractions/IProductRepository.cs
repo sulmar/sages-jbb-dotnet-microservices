@@ -1,4 +1,5 @@
 ﻿using ProductCatalog.Domain.Entities;
+using Shared.Domain.Entities;
 
 namespace ProductCatalog.Domain.Abstractions;
 
