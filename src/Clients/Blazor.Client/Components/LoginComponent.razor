@@ -1,0 +1,43 @@
+﻿@using BlazorApp.Model
+@inject HttpClient Http
+
+<form class="d-flex align-items-center m-3" @onsubmit="HandleLogin">
+    <div class="me-2">
+        <input type="text" class="form-control" id="username" @bind="LoginModel.Username" placeholder="Enter username" required>
+    </div>
+    <div class="me-2">
+        <input type="password" class="form-control" id="password" @bind="LoginModel.Password" placeholder="Enter password" required autocomplete="current-password">
+    </div>
+    <button class="btn btn-outline-dark" type="submit">
+        <i class="bi-person-fill me-1"></i>
+        Login
+    </button>
+</form>
+
+
+
+@code {
+
+    private LoginModel LoginModel = new();
+
+    private async Task HandleLogin()
+    {
+
+        Console.WriteLine($"Login attempt: Username: {LoginModel.Username} with password: {new string('*', LoginModel.Password?.Length ?? 0)}");
+
+        var response = await Http.PostAsJsonAsync<LoginModel>("api/login", LoginModel);
+
+        if (response.IsSuccessStatusCode)
+        {
+            string token = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine(token);
+            // Handle successful login, e.g., navigate to another page
+        }
+        else
+        {
+            // Handle login failure, e.g., show an error message
+        }
+    }
+
+}

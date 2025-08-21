@@ -1,0 +1,24 @@
+﻿@page "/dashboard"
+@using BlazorApp.Components
+
+<PageTitle>Dashboard</PageTitle>
+
+<!-- Section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+            
+            <MetricRectangle Title="Total Sales" Value="$1,234" BackgroundColor="#28a745" TextColor="#fff" />
+            <MetricRectangle Title="New Users" Value="567" BackgroundColor="#007bff" TextColor="#fff" />
+            <MetricRectangle Title="Active Sessions" Value="89" BackgroundColor="#ffc107" TextColor="#000" />
+            
+        </div>
+    </div>
+</section>
+
+
+
+@code {
+
+}

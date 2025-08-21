@@ -1,0 +1,40 @@
+﻿@code {
+    [Parameter]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Value { get; set; } = string.Empty;
+
+    [Parameter]
+    public string BackgroundColor { get; set; } = "#f8f9fa"; // Default light gray background
+
+    [Parameter]
+    public string TextColor { get; set; } = "#000"; // Default black text color
+}
+
+<div class="card text-center" style="background-color: @BackgroundColor; color: @TextColor;">
+    <div class="card-body">
+        <h5 class="card-title">@Title</h5>
+        <p class="card-text display-4">@Value</p>
+    </div>
+</div>
+
+<style>
+    .card {
+        width: 200px;
+        margin: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .card-text {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+</style>

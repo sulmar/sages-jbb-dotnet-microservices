@@ -1,0 +1,69 @@
+@using System.ComponentModel.DataAnnotations
+@using BlazorApp.Model
+@inject HttpClient Http
+
+<div class="col mb-5">
+    <div class="card h-100">
+        <!-- Sale badge-->
+        @if (Product.IsSale)
+        {
+            <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+        }
+        <!-- Product image-->
+        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+        <!-- Product details-->
+        <div class="card-body p-4">
+            <div class="text-center">
+                <!-- Product name-->
+                <h5 class="fw-bolder">@Product.Name</h5>
+                <!-- Product price-->
+                @if(Product.IsSale)
+                {
+                    <span class="text-muted text-decoration-line-through">$@Product.Price</span>
+                }
+                $@Product.DiscountedPrice
+            </div>
+        </div>
+        <!-- Product actions-->
+        <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+            <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#" @onclick="AddToCart">Add to cart</a></div>
+        </div>
+    </div>
+</div>
+
+@code {
+   
+    [Parameter, Required]
+    public Product Product { get; set; } = null!;
+    
+    private int cartCount = 0;
+
+    private async Task AddToCart()
+    {
+        // Handle the "Add to cart" button click event
+        cartCount++;
+        // You can perform additional actions here, like updating a shopping cart or calling a service
+        Console.WriteLine("Product added to cart. Current cart count: " + cartCount);
+        
+        try
+        {            
+            var response = await Http.PostAsJsonAsync("api/cart", Product);
+            if (response.IsSuccessStatusCode)
+            {
+                // Optionally, update UI or provide feedback to user
+                Console.WriteLine("Product added to cart successfully.");
+            }
+            else
+            {
+                // Handle error (e.g., display error message to user)
+                Console.WriteLine("Error adding product to cart.");
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle error (e.g., display error message to user)
+            Console.WriteLine($"Error adding product to cart: {ex.Message}");
+        }
+    }
+    
+}

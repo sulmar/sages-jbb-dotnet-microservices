@@ -1,0 +1,55 @@
+﻿@page "/"
+@using BlazorApp.Components
+@using BlazorApp.Model
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+
+
+<!-- Section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+
+            @if (products == null)
+            {
+                <p>
+                    <em>Loading...</em>
+                </p>
+            }
+            else
+            {
+                @foreach (var product in products)
+                {
+                    <ProductComponent Product="@product" />
+                }
+            }
+        </div>
+    </div>
+</section>
+
+
+@code {
+
+    private List<Product>? products;
+
+    protected override void OnInitialized()
+    {
+        products = new List<Product>
+        {
+            new Product(1, "Popular Product", 80.00m),
+            new Product(2, "Special Item", 80.00m, 50m),
+            new Product(3, "Extra Product", 80.00m),
+            new Product(4, "Bonus Product", 80.00m, 70m),
+            new Product(5, "Fancy Product", 80.00m, 70m),
+            new Product(6, "Smart Product", 99.99m),
+            new Product(7, "Old-school Product", 199.00m),
+            new Product(8, "Future Product", 1.00m)
+        };
+
+       // TODO: uncomment
+       // products = await Http.GetFromJsonAsync<List<Product>>("api/products");
+    }
+
+}
