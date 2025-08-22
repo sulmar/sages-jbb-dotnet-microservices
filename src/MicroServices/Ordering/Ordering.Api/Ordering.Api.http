@@ -1,0 +1,6 @@
+@Ordering.Api_HostAddress = https://localhost:7000
+
+POST {{Ordering.Api_HostAddress}}/api/orders/checkout
+Accept: application/json
+
+###
