@@ -50,12 +50,15 @@ app.MapPost("api/cart", async (Product product, ICartRepository repository, Http
 });
 
 // DELETE api/cart
-app.MapDelete("api/cart", ([FromBody] Product product, [FromServices] ICartRepository repository) =>
+app.MapDelete("api/cart", async ([FromBody] Product product, [FromServices] ICartRepository repository, IHubContext<CartHub> hubContext) =>
 {
 
     var session = "user:1";   // fallback
 
     repository.Delete(session, product.Id);
+
+
+    await hubContext.Clients.Group(session).SendAsync("CartChanged", 0);
 });
 
 app.MapHealthChecks("/hc", new HealthCheckOptions
