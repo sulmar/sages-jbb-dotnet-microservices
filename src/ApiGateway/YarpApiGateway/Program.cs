@@ -1,9 +1,14 @@
 var builder = WebApplication.CreateBuilder(args);
 
+// dotnet add package Microsoft.Extensions.ServiceDiscovery
+// dotnet add package Microsoft.Extensions.ServiceDiscovery.Yarp
+
+builder.Services.AddServiceDiscovery();
 
 // dotnet add package Yarp.ReverseProxy
 builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"))
+    .AddServiceDiscoveryDestinationResolver();
 
 var app = builder.Build();
 
