@@ -1,4 +1,4 @@
-@ShoppingCart.Api_HostAddress = http://localhost:5211
+@ShoppingCart.Api_HostAddress = https://localhost:7000
 
 GET {{ShoppingCart.Api_HostAddress}}/ping
 Accept: application/json
