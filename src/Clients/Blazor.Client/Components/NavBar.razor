@@ -1,3 +1,5 @@
+@using Microsoft.AspNetCore.SignalR.Client
+@implements IAsyncDisposable
 
 @inject HttpClient Http
 
@@ -52,12 +54,36 @@
 @code {
     private int cartCount = 0;
 
-    
+    // dotnet add package Microsoft.AspNetCore.Signalr.Client
+    private HubConnection connection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        connection = new HubConnectionBuilder()
+            .WithUrl("https://localhost:7000/signalr/cart")
+            .Build();
+
+        connection.On<int>("CartChanged", quantity =>
+        {
+            cartCount = quantity;
+
+            StateHasChanged();
+        });
+
+        await connection.StartAsync();
+
+        cartCount++;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await connection.StopAsync();
+    }
 
     private async Task HandleButtonClick()
     {
         // Handle the button click event here
-        cartCount++;
+       // cartCount++;
 
         var response = await Http.PostAsync("api/cart/submit", null);
 

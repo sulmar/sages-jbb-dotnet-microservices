@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Shared.Domain.Entities;
+using ShoppingCart.Api.Hubs;
 using ShoppingCart.Domain.Abstractions;
 using ShoppingCart.Infrastructure;
 using StackExchange.Redis;
@@ -20,6 +22,8 @@ builder.Services.AddScoped<ICartRepository, RedisCartRepository>();
 builder.Services.AddHealthChecks()
     .AddRedis(sp => sp.GetRequiredService<IConnectionMultiplexer>());
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,7 +34,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/ping", () => "pong");
 
-app.MapPost("api/cart", (Product product, ICartRepository repository, HttpContext context) =>
+app.MapPost("api/cart", async (Product product, ICartRepository repository, HttpContext context, IHubContext<CartHub> hubContext) =>
 {
     //string? session = context.Session?.Id;
 
@@ -38,6 +42,11 @@ app.MapPost("api/cart", (Product product, ICartRepository repository, HttpContex
     var session = "user:1";   // fallback
 
     repository.Add(session, product);
+
+    // await hubContext.Clients.All.SendAsync("CartChanged", 10);
+
+    await hubContext.Clients.Group(session).SendAsync("CartChanged", 10);
+
 });
 
 // DELETE api/cart
@@ -56,6 +65,9 @@ app.MapHealthChecks("/hc", new HealthCheckOptions
         await context.Response.WriteAsJsonAsync(report);
     }
 });
+
+
+app.MapHub<CartHub>("signalr/cart");
 
 app.UseHttpsRedirection();
 
