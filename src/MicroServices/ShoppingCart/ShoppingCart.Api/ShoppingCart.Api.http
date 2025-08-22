@@ -9,7 +9,18 @@ Accept: application/json
 POST {{ShoppingCart.Api_HostAddress}}/api/cart
 Content-Type: application/json
 {
-    "Id": 1,
+    "Id": 2,
+    "Name": "a",
+    "Price": 1.99
+}
+
+###
+
+
+DELETE {{ShoppingCart.Api_HostAddress}}/api/cart
+Content-Type: application/json
+{
+    "Id": 2,
     "Name": "a",
     "Price": 1.99
 }
