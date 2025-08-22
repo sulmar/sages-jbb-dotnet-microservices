@@ -482,3 +482,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+/src/Monitoring/Monitoring.Web/healthchecks.db
+/src/Monitoring/Monitoring.Web/healthchecks.db-shm
+/src/Monitoring/Monitoring.Web/healthchecks.db-wal
