@@ -24,17 +24,7 @@ builder.Services.AddScoped<Context>(sp =>
 });
 
 
-builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
-{
-    policy
-    .WithOrigins("https://localhost:7108")
-    .WithMethods("GET")
-    .AllowAnyHeader();
-}));
-
 var app = builder.Build();
-
-app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
