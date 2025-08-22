@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Domain.Entities;
 using ShoppingCart.Domain.Abstractions;
@@ -14,6 +15,10 @@ var connectionString = builder.Configuration.GetConnectionString("Connection");
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(connectionString));
 builder.Services.AddScoped<ICartRepository, RedisCartRepository>();
+
+// dotnet add package AspNetCore.HealthChecks.Redis
+builder.Services.AddHealthChecks()
+    .AddRedis(sp => sp.GetRequiredService<IConnectionMultiplexer>());
 
 var app = builder.Build();
 
@@ -44,6 +49,13 @@ app.MapDelete("api/cart", ([FromBody] Product product, [FromServices] ICartRepos
     repository.Delete(session, product.Id);
 });
 
+app.MapHealthChecks("/hc", new HealthCheckOptions
+{
+    ResponseWriter = async (context, report) =>
+    {
+        await context.Response.WriteAsJsonAsync(report);
+    }
+});
 
 app.UseHttpsRedirection();
 
