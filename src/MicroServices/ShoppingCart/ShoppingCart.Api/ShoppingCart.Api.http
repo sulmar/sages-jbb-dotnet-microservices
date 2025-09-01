@@ -26,3 +26,9 @@ Content-Type: application/json
 }
 
 ###
+
+
+GET {{ShoppingCart.Api_HostAddress}}/api/cart
+Accept: application/json
+
+###

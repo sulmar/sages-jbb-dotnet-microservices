@@ -1,5 +1,6 @@
 ﻿using Shared.Domain.Entities;
 using ShoppingCart.Domain.Abstractions;
+using ShoppingCart.Domain.Entities;
 using StackExchange.Redis;
 
 namespace ShoppingCart.Infrastructure;
@@ -29,5 +30,26 @@ public class RedisCartRepository(IConnectionMultiplexer connection) : ICartRepos
             db.HashDelete(key, field);
 
         db.KeyExpire(key, TimeSpan.FromMinutes(3)); // EXPIRE key time
+    }
+
+    public Cart? Get(string sessionId)
+    {
+        string key = $"cart:{sessionId}";
+
+        var entries = db.HashGetAll(key);  // HGETALL key
+
+        var cart = new Cart
+        {
+            SessionId = sessionId,
+            Items = entries.Select(e => new CartItem
+            {
+                ProductId = e.Name.ToString().Replace("product:", ""), 
+                Quantity = (int)e.Value,
+                Price = 100 // TODO: Pobrac cene
+            }).ToList()
+        }; 
+
+        return cart;
+
     }
 }

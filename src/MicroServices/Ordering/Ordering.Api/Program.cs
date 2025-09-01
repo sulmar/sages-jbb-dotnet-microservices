@@ -14,7 +14,7 @@ app.UseHttpsRedirection();
 
 app.MapPost("api/orders/checkout", () =>
 {
-
+    // TODO: pobierz zawartosc koszyka, utworz zamowienie i zapisz w bazie danych
 });
 
 app.Run();

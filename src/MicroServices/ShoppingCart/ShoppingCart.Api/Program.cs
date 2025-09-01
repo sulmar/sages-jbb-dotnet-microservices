@@ -61,6 +61,19 @@ app.MapDelete("api/cart", async ([FromBody] Product product, [FromServices] ICar
     await hubContext.Clients.Group(session).SendAsync("CartChanged", 0);
 });
 
+// GET api/cart
+
+app.MapGet("api/cart", (ICartRepository repository) =>
+{
+    var session = "user:1";
+
+    var cart = repository.Get(session);
+
+    return Results.Ok(cart);
+
+});
+
+
 app.MapHealthChecks("/hc", new HealthCheckOptions
 {
     ResponseWriter = async (context, report) =>
