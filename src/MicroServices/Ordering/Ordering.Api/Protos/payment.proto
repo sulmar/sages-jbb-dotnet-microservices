@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+option csharp_namespace = "PaymentService.Grcp";
+
+service Payment {
+	rpc AuthorizePayment (PaymentRequest) returns (PaymentResponse);
+}
+
+message PaymentRequest {
+	int32 order_id = 1;
+	double amount = 2;
+	string currency = 3;
+}
+
+enum PaymentStatus {
+	ACCEPTED = 0;
+	DECLINED = 1;
+}
+
+message PaymentResponse { 
+
+	PaymentStatus status = 1;
+	string reason = 2;
+}
