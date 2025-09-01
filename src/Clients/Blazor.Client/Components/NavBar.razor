@@ -81,11 +81,8 @@
     }
 
     private async Task HandleButtonClick()
-    {
-        // Handle the button click event here
-       // cartCount++;
-
-        var response = await Http.PostAsync("api/cart/submit", null);
+    {        
+        var response = await Http.PostAsync("api/orders/checkout", null);
 
         if (response.IsSuccessStatusCode)
         {

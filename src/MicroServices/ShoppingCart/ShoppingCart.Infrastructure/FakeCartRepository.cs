@@ -1,6 +1,5 @@
 ﻿using Shared.Domain.Entities;
 using ShoppingCart.Domain.Abstractions;
-using ShoppingCart.Domain.Entities;
 
 namespace ShoppingCart.Infrastructure;
 

@@ -1,6 +1,5 @@
 ﻿using Shared.Domain.Entities;
 using ShoppingCart.Domain.Abstractions;
-using ShoppingCart.Domain.Entities;
 using StackExchange.Redis;
 
 namespace ShoppingCart.Infrastructure;
