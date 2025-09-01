@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option csharp_namespace = "PaymentService.Grcp";
+
 service Payment {
 	rpc AuthorizePayment (PaymentRequest) returns (PaymentResponse);
 }
