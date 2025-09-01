@@ -1,3 +1,5 @@
+using Grpc.Core;
+using PaymentService.Grcp;
 using Shared.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,10 +46,20 @@ app.MapPost("api/orders/checkout", async (
         Currency = "PLN"
     };
 
-    var response = await paymentClient.AuthorizePaymentAsync(request);
+    // var response = await paymentClient.AuthorizePaymentAsync(request);
 
-    if (response.Status == PaymentService.Grcp.PaymentStatus.Declined)
-        return Results.BadRequest(new { message = response.Reason });
+    var call = paymentClient.AuthorizePaymentStream(request);
+
+    await foreach (var stage in call.ResponseStream.ReadAllAsync())
+    {
+        Console.WriteLine($"{stage.Stage}");
+
+        var response = stage.Response;
+
+        if (response.Status == PaymentStatus.Declined)
+            return Results.BadRequest(new { message = response.Reason });
+    }
+
 
     return Results.Accepted();
 

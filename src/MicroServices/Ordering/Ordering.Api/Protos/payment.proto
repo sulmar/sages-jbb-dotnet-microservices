@@ -4,6 +4,7 @@ option csharp_namespace = "PaymentService.Grcp";
 
 service Payment {
 	rpc AuthorizePayment (PaymentRequest) returns (PaymentResponse);
+	rpc AuthorizePaymentStream (PaymentRequest) returns (stream PaymentStageResponse);
 }
 
 message PaymentRequest {
@@ -21,4 +22,16 @@ message PaymentResponse {
 
 	PaymentStatus status = 1;
 	string reason = 2;
+}
+
+enum PaymentStage { 
+	Initializing = 0;
+	Authorizing = 1;
+	Processing = 2;
+}
+
+message PaymentStageResponse {	
+	PaymentStage stage = 1;	
+
+	PaymentResponse response = 2;
 }
