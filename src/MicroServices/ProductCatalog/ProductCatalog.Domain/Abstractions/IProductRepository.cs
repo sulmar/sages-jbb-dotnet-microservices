@@ -16,6 +16,7 @@ public interface IEntityRepository<T>
 
 public interface IProductRepository : IEntityRepository<Product>
 {
+    
 }
 
 public interface ICategoryRepository : IEntityRepository<Category>

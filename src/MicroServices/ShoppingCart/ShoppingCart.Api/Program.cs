@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Shared.Domain.Entities;
+using ShoppingCart.Api.BackgroundServices;
 using ShoppingCart.Api.Hubs;
 using ShoppingCart.Domain.Abstractions;
 using ShoppingCart.Infrastructure;
@@ -23,6 +24,10 @@ builder.Services.AddHealthChecks()
     .AddRedis(sp => sp.GetRequiredService<IConnectionMultiplexer>());
 
 builder.Services.AddSignalR();
+
+
+// builder.Services.AddHostedService<MyWorker>();
+builder.Services.AddHostedService<NotificationWorker>();
 
 var app = builder.Build();
 

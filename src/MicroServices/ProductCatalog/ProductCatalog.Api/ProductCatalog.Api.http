@@ -11,3 +11,12 @@ GET {{ProductCatalog.Api_HostAddress}}/api/products/{{id}}
 
 ###
 
+
+PATCH {{ProductCatalog.Api_HostAddress}}/api/products/{{id}}/price
+Content-Type: application/json
+
+{
+    "Price": 130
+}
+
+###

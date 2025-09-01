@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using ProductCatalog.Api.Models;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Infrastructure;
 using Shared.Domain.Entities;
+using StackExchange.Redis;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +39,11 @@ builder.Services.AddHealthChecks()
     })
     ;
 
+// dotnet add package StackExchange.Redis
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect("localhost:6379"));
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,6 +64,31 @@ app.MapGet("api/products", (IProductRepository repository) => repository.GetAll(
 app.MapGet("api/products/{id}", (int id, IProductRepository repository) => repository.Get(id));
 
 // app.MapPost("api/products", ([FromBody] Product product) => "Created.");
+
+// PUT
+
+// PATCH
+
+const string PubSubChannel = "events:product-updated";
+
+app.MapPatch("api/products/{id}/price", (int id, PriceDto dto, IConnectionMultiplexer connection) =>
+{
+    Console.WriteLine(dto.ToString());
+
+    var sub = connection.GetSubscriber();
+
+    var @event = new
+    {
+        type = "ProductUpdated",
+        productId = id,
+        newPrice = dto.Price,
+    };
+
+    sub.Publish(PubSubChannel, JsonSerializer.Serialize(@event));
+
+    return Results.Ok();
+  
+});
 
 app.MapHealthChecks("/hc", new HealthCheckOptions
 {
