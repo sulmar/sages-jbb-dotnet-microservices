@@ -7,6 +7,7 @@ using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Infrastructure;
 using Shared.Domain.Entities;
 using StackExchange.Redis;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,7 +61,62 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = "https://jbb.pl",
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key)
-        }; 
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = ctx =>
+            {
+                // Dodatkowo: token z query ?access_token= (np. SSE/WS/SignalR)
+                if (string.IsNullOrEmpty(ctx.Token) &&
+                    ctx.Request.Query.TryGetValue("access_token", out var t))
+                {
+                    ctx.Token = t;
+                }
+                return Task.CompletedTask;
+            },
+
+            OnAuthenticationFailed = ctx =>
+            {
+                var logger = ctx.HttpContext.RequestServices
+                    .GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("JwtDiag");
+
+                var reason = ctx.Exception switch
+                {
+                    SecurityTokenExpiredException => "token_expired",
+                    SecurityTokenInvalidAudienceException => "invalid_audience",
+                    SecurityTokenInvalidIssuerException => "invalid_issuer",
+                    SecurityTokenInvalidSignatureException => "invalid_signature",
+                    SecurityTokenNoExpirationException => "no_exp_claim",
+                    SecurityTokenInvalidLifetimeException => "invalid_lifetime",
+                    SecurityTokenInvalidAlgorithmException => "invalid_alg",
+                    _ => "auth_failed"
+                };
+
+                logger.LogError(ctx.Exception, "JWT auth failed: {Reason}", reason);
+
+                // Uzupe³nij WWW-Authenticate dla 401
+                ctx.Response.Headers["WWW-Authenticate"] =
+                    $"Bearer error=\"invalid_token\", error_description=\"{reason}: {ctx.Exception.Message}\"";
+
+                return Task.CompletedTask;
+            },
+
+            OnTokenValidated = ctx =>
+            {
+                var logger = ctx.HttpContext.RequestServices
+                    .GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("JwtDiag");
+
+                var jwt = ctx.SecurityToken as JwtSecurityToken;
+                logger.LogInformation("JWT OK: iss={iss}, aud={aud}, exp={exp}",
+                    jwt?.Issuer, string.Join(",", jwt?.Audiences ?? []),
+                    jwt?.Payload?.Exp);
+
+                return Task.CompletedTask;
+            }
+        };
     });
 builder.Services.AddAuthorization();
 
