@@ -1,6 +1,7 @@
 ﻿using IdentityProvider.Api.Abstractions;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 
 namespace IdentityProvider.Api.Infrastructures;
@@ -40,7 +41,9 @@ public class JwtTokenService : ITokenService
         {
             [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
             [JwtRegisteredClaimNames.Name] = identity.UserName,
-            [JwtRegisteredClaimNames.Email] = identity.Email,
+            [ClaimTypes.Email] = identity.Email,
+            [ClaimTypes.Role] = new[] { "developer", "admin", "tester" },
+            [JwtRegisteredClaimNames.Birthdate] = DateTime.Today.AddYears(-21)
         };
 
         string secretKey = "a-string-secret-at-least-256-bits-long";

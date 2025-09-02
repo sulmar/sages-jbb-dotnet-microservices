@@ -1,13 +1,16 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using ProductCatalog.Api.Authorization;
 using ProductCatalog.Api.Models;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Infrastructure;
 using Shared.Domain.Entities;
 using StackExchange.Redis;
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,7 +64,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = "https://jbb.pl",
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(key)
-        };
+        };        
 
         options.Events = new JwtBearerEvents
         {
@@ -109,16 +112,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .GetRequiredService<ILoggerFactory>()
                     .CreateLogger("JwtDiag");
 
-                var jwt = ctx.SecurityToken as JwtSecurityToken;
-                logger.LogInformation("JWT OK: iss={iss}, aud={aud}, exp={exp}",
-                    jwt?.Issuer, string.Join(",", jwt?.Audiences ?? []),
-                    jwt?.Payload?.Exp);
+                var jwt = ctx.SecurityToken;
 
                 return Task.CompletedTask;
             }
         };
     });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("Adult", policy =>
+    {
+        policy.RequireRole("developer").RequireClaim(ClaimTypes.Email);
+        policy.AddRequirements(new MinimumAge(18));
+    });
+
 builder.Services.AddAuthorization();
+
+builder.Services.AddTransient<IAuthorizationHandler, MinimumAgeHandler>();
 
 var app = builder.Build();
 
@@ -139,10 +149,15 @@ app.MapGet("/", () => "Hello Products.Api!");
 
 
 // GET api/products
-app.MapGet("api/products", (IProductRepository repository) => repository.GetAll()).RequireAuthorization(); // [Authorize]
+app.MapGet("api/products", (IProductRepository repository) => repository.GetAll())
+    .RequireAuthorization(); // [Authorize]
 
 
-app.MapGet("api/products/{id}", (int id, IProductRepository repository) => repository.Get(id));
+app.MapGet("api/products/{id}", (int id, IProductRepository repository) => repository.Get(id))
+    .RequireAuthorization("Adult"); // [Authorize(Roles = "developer")]
+
+// [Authorize(Policies="CanPrint")]
+
 
 // app.MapPost("api/products", ([FromBody] Product product) => "Created.");
 
