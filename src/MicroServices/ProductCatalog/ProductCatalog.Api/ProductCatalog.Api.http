@@ -2,8 +2,12 @@
 
 @id = 2
 
+@access_token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJodHRwczovL2piYi5wbCIsImlzcyI6Imh0dHBzOi8vd3d3LnNhZ2VzLnBsIiwiZXhwIjoxNzU2ODAzMDIxLCJqdGkiOiIyY2FhNjc1ZC02YjgzLTQ0ZDQtOGU3NC1iNzVhMmUzODhlYTAiLCJuYW1lIjoiam9obiIsImVtYWlsIjoiam9obkBkb21haW4uY29tIiwiaWF0IjoxNzU2ODAyNzIxLCJuYmYiOjE3NTY4MDI3MjF9.MYCLMt-Lh98YjHmpj85l6lCqexCz1l0MVjdavVnBaWM
+
 GET {{ProductCatalog.Api_HostAddress}}/api/products/
 Accept: application/json
+Authorization: Bearer {{access_token}}
+
 
 ###
 

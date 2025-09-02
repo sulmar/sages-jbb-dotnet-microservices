@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.IdentityModel.Tokens;
 using ProductCatalog.Api.Models;
 using ProductCatalog.Domain.Abstractions;
 using ProductCatalog.Infrastructure;
@@ -42,9 +44,30 @@ builder.Services.AddHealthChecks()
 // dotnet add package StackExchange.Redis
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect("localhost:6379"));
 
+string secretKey = "a-string-secret-at-least-256-bits-long";
 
+var key = System.Text.Encoding.UTF8.GetBytes(secretKey);
+
+// dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)    
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = "https://www.sages.pl",
+            ValidateAudience = true,
+            ValidAudience = "https://jbb.pl",
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        }; 
+    });
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -60,7 +83,9 @@ app.MapGet("/", () => "Hello Products.Api!");
 
 
 // GET api/products
-app.MapGet("api/products", (IProductRepository repository) => repository.GetAll());
+app.MapGet("api/products", (IProductRepository repository) => repository.GetAll()).RequireAuthorization(); // [Authorize]
+
+
 app.MapGet("api/products/{id}", (int id, IProductRepository repository) => repository.Get(id));
 
 // app.MapPost("api/products", ([FromBody] Product product) => "Created.");

@@ -1,0 +1,34 @@
+@IdentityProvider_HostAddress = https://localhost:7268
+
+POST {{IdentityProvider_HostAddress}}/api/login
+Content-Type: application/json
+
+{
+    "Username":"john",
+    "Password":"123"
+}
+
+###
+
+
+
+POST {{IdentityProvider_HostAddress}}/api/login
+Content-Type: application/json
+
+{
+    "Username":"john",
+    "Password":"a"
+}
+
+###
+
+
+POST {{IdentityProvider_HostAddress}}/api/login
+Content-Type: application/json
+
+{
+    "Username":"bob",
+    "Password":"123"
+}
+
+###
