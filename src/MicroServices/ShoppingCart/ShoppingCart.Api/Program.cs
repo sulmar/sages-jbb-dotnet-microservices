@@ -90,7 +90,6 @@ app.MapHealthChecks("/hc", new HealthCheckOptions
 
 app.MapHub<CartHub>("signalr/cart");
 
-app.UseHttpsRedirection();
 
 app.Run();
 
