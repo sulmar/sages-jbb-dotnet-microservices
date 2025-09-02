@@ -1,0 +1,67 @@
+services:
+  shoppingcart.api:
+    image: ${DOCKER_REGISTRY-}shoppingcartapi
+    build:
+      context: .
+      dockerfile: MicroServices/ShoppingCart/ShoppingCart.Api/Dockerfile    
+    environment:
+      ConnectionStrings__Connection: "redis:6379" 
+    depends_on:
+     - redis
+
+  productcatalog.api:
+    image: ${DOCKER_REGISTRY-}productcatalogapi
+    build:
+      context: .
+      dockerfile: MicroServices/ProductCatalog/ProductCatalog.Api/Dockerfile    
+    environment:
+      ConnectionStrings__Connection: "redis:6379" 
+    depends_on:
+     - redis
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+     - "6379:6379"
+ 
+
+
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: .
+      dockerfile: MicroServices/Ordering/Ordering.Api/Dockerfile
+
+
+  payment.api:
+    image: ${DOCKER_REGISTRY-}paymentapi
+    build:
+      context: .
+      dockerfile: MicroServices/Payment/Payment.Api/Dockerfile
+
+
+  yarpapigateway:
+    image: ${DOCKER_REGISTRY-}yarpapigateway
+    build:
+      context: .
+      dockerfile: ApiGateway/YarpApiGateway/Dockerfile
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:8080"
+    ports:
+     - "8000:8080"
+    
+    depends_on:
+     - shoppingcart.api
+     - productcatalog.api
+     - ordering.api
+     - payment.api
+     - identityprovider.api
+
+
+  identityprovider.api:
+    image: ${DOCKER_REGISTRY-}identityproviderapi
+    build:
+      context: .
+      dockerfile: IdentityProvider/IdentityProvider.Api/Dockerfile
+

@@ -1,4 +1,4 @@
-@IdentityProvider_HostAddress = https://localhost:7268
+@IdentityProvider_HostAddress = http://localhost:8000
 
 POST {{IdentityProvider_HostAddress}}/api/login
 Content-Type: application/json

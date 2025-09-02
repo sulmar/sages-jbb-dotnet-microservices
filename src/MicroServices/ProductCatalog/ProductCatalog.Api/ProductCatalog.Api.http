@@ -1,4 +1,4 @@
-@ProductCatalog.Api_HostAddress = https://localhost:7000
+@ProductCatalog.Api_HostAddress = http://localhost:8000
 
 @id = 2
 

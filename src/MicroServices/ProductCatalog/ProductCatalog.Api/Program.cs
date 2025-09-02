@@ -46,7 +46,8 @@ builder.Services.AddHealthChecks()
     ;
 
 // dotnet add package StackExchange.Redis
-builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect("localhost:6379"));
+var connectionString = builder.Configuration.GetConnectionString("Connection");
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp => ConnectionMultiplexer.Connect(connectionString));
 
 string secretKey = "a-string-secret-at-least-256-bits-long";
 
